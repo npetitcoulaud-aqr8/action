@@ -22,6 +22,15 @@ jobs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
 
     steps:
+    - name: Enable auto-merge
+      uses: octokit/request-action@v2.x
+      with:
+        route: POST /repos/:owner/:repo/pulls/:pull_number/update-branch
+        pull_number: ${{ github.event.pull_request.number }}
+        mediaType: '{"application/vnd.github.lydian-preview+json": "true"}'
+        headers: '{"Accept": "application/vnd.github.lydian-preview+json"}'
+        request: '{"auto_merge": true}'
+
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v4
