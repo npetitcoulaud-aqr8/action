@@ -24,13 +24,13 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const pullRequest = await github.rest.pulls.get({
+          const { data: pullRequest } = await github.rest.pulls.get({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: context.payload.pull_request.number,
           });
   
-          const pullId = pullRequest.data.node_id;
+          const pullId = pullRequest.node_id;
           const query = `
           mutation enableAutoMerge($pullId: ID!) {
             enablePullRequestAutoMerge(input: {
