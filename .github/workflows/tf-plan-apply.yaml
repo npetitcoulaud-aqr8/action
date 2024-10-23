@@ -31,20 +31,20 @@ jobs:
           });
   
           const pullId = pullRequest.data.node_id;
-          const data = await github.graphql(`
-            mutation enableAutoMerge($pullId: ID!) {
-              enablePullRequestAutoMerge(input: {
-                pullRequestId: $pullId,
-              }) {
-                pullRequest {
-                  id,
-                  autoMergeRequest {
-                    enabledAt
-                  }
+          const query = `
+          mutation enableAutoMerge($pullId: ID!) {
+            enablePullRequestAutoMerge(input: {
+              pullRequestId: $pullId,
+            }) {
+              pullRequest {
+                id,
+                autoMergeRequest {
+                  enabledAt
                 }
               }
             }
-          `,
+          }`
+          const data = await github.graphql(query,
           {
             pullId,
             headers: {
