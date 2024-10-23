@@ -24,6 +24,8 @@ jobs:
     steps:
     - name: Enable auto-merge
       uses: octokit/request-action@v2.x
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         route: POST /repos/:owner/:repo/pulls/:pull_number/update-branch
         pull_number: ${{ github.event.pull_request.number }}
