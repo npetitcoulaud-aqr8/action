@@ -27,7 +27,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        route: POST /repos/:owner/:repo/pulls/:pull_number/update-branch
+        route: POST /repos/{owner}/{repo}/pulls/{pull_number}/update-branch
         pull_number: ${{ github.event.pull_request.number }}
         mediaType: '{"application/vnd.github.lydian-preview+json": "true"}'
         headers: '{"Accept": "application/vnd.github.lydian-preview+json"}'
