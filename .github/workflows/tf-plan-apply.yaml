@@ -8,20 +8,57 @@ on:
 #Special permissions required for OIDC authentication
 permissions:
   id-token: write
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
   terraform-plan:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest
-    env:
-      #this is needed since we are running terraform with read-only permissions
-      ARM_SKIP_PROVIDER_REGISTRATION: true
     outputs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
 
     steps:
+    - name: Enable auto-merge
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { data: pullRequest } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+          });
+  
+          const pullId = pullRequest.node_id;
+          const query = `
+          mutation enableAutoMerge($pullId: ID!) {
+            enablePullRequestAutoMerge(input: {
+              pullRequestId: $pullId,
+            }) {
+              pullRequest {
+                id,
+                autoMergeRequest {
+                  enabledAt
+                }
+              }
+            }
+          }`
+          const data = await github.graphql(query,
+          {
+            pullId
+          });
+  
+          const {
+            enablePullRequestAutoMerge: {
+              pullRequest: {
+                autoMergeRequest: { enabledAt },
+              },
+            },
+          } = data;
+  
+          core.info(`Automerge for #${pullRequest.number} “${pullRequest.title}” by ${pullRequest.user.login} enabled at ${enabledAt}`)
+
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v4
