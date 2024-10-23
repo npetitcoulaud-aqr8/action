@@ -46,10 +46,7 @@ jobs:
           }`
           const data = await github.graphql(query,
           {
-            pullId,
-            headers: {
-              authorization: `token ${{ secrets.GITHUB_TOKEN }}`
-            },
+            pullId
           });
   
           const {
